@@ -1,0 +1,49 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Copy agconnect-services.json
+        run: |
+          mkdir -p app
+          if [ -f doc/agconnect-services.json ]; then
+            cp doc/agconnect-services.json app/agconnect-services.json
+          fi
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Build Release APK
+        run: chmod +x ./gradlew && ./gradlew assembleRelease --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: haoWaiHaowai-release-apk
+          path: app/build/outputs/apk/release/*.apk
+
+      - name: Upload mapping file
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: haoWaiHaowai-mapping
+          path: app/build/outputs/mapping/release/

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">号外号外</string>
+    <string name="title_message_list">消息记录</string>
+    <string name="title_log_list">运行日志</string>
+    <string name="token_label">Push Token</string>
+    <string name="btn_get_token">获取Token</string>
+    <string name="btn_delete_token">注销Token</string>
+    <string name="btn_view_messages">查看消息记录</string>
+    <string name="btn_view_logs">查看运行日志</string>
+    <string name="btn_clear_logs">清空日志</string>
+    <string name="btn_clear_messages">清空消息</string>
+    <string name="btn_copy">复制</string>
+    <string name="btn_delete">删除</string>
+    <string name="btn_cancel">取消</string>
+    <string name="btn_confirm">确定</string>
+    <string name="token_status">Token状态</string>
+    <string name="token_not_obtained">未获取</string>
+    <string name="token_obtained">已获取</string>
+    <string name="no_messages">暂无消息记录</string>
+    <string name="no_logs">暂无运行日志</string>
+    <string name="message_content">消息内容</string>
+    <string name="message_time">接收时间</string>
+    <string name="message_title">消息标题</string>
+    <string name="message_data">数据内容</string>
+    <string name="message_id">消息ID</string>
+    <string name="delete_confirm">确定要删除选中的记录吗？</string>
+    <string name="clear_confirm">确定要清空所有记录吗？</string>
+    <string name="copy_success">已复制到剪贴板</string>
+    <string name="delete_success">删除成功</string>
+    <string name="clear_success">清空成功</string>
+    <string name="token_get_success">Token获取成功</string>
+    <string name="token_get_failed">Token获取失败</string>
+    <string name="token_delete_success">Token注销成功</string>
+    <string name="token_delete_failed">Token注销失败</string>
+    <string name="select_messages">选择消息</string>
+    <string name="select_logs">选择日志</string>
+    <string name="selected_count">已选择 %d 项</string>
+    <string name="notification_channel_id">haowai_push_channel</string>
+    <string name="notification_channel_name">号外号外推送通知</string>
+    <string name="notification_channel_desc">接收号外号外推送消息通知</string>
+    <string name="app_info">号外号外 v1.0.0\n华为推送服务客户端</string>
+</resources>
