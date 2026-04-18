@@ -40,10 +40,17 @@ class HwPushService : HmsMessageService() {
         val body = notification?.body
         val data = message.data
         
-        LogManager.i("HwPushService", "Message received - Title: $title, Body: $body, Data: $data")
+        val messageType = if (notification != null) {
+            "通知消息"
+        } else {
+            "透传消息"
+        }
+        
+        LogManager.i("HwPushService", "Message type: $messageType, Title: $title, Body: $body, Data: $data")
 
         val pushMessage = PushMessage(
             messageId = message.messageId,
+            messageType = messageType,
             title = title,
             body = body,
             data = data,
@@ -56,10 +63,11 @@ class HwPushService : HmsMessageService() {
         val database = HaoWaiDatabase.getInstance(this)
         CoroutineScope(Dispatchers.IO).launch {
             database.pushMessageDao().insertMessage(pushMessage)
-            LogManager.i("HwPushService", "Message saved to database")
+            LogManager.i("HwPushService", "Message saved to database, type: $messageType")
         }
 
         val intent = Intent(ACTION_MESSAGE_RECEIVED)
+        intent.putExtra(EXTRA_MESSAGE_TYPE, messageType)
         intent.putExtra(EXTRA_MESSAGE_TITLE, title ?: "")
         intent.putExtra(EXTRA_MESSAGE_BODY, body ?: "")
         intent.putExtra(EXTRA_MESSAGE_DATA, data ?: "")
@@ -78,6 +86,7 @@ class HwPushService : HmsMessageService() {
         const val ACTION_TOKEN_UPDATE = "evilcode.notification.hwpush.ACTION_TOKEN_UPDATE"
         const val ACTION_MESSAGE_RECEIVED = "evilcode.notification.hwpush.ACTION_MESSAGE_RECEIVED"
         const val EXTRA_TOKEN = "extra_token"
+        const val EXTRA_MESSAGE_TYPE = "extra_message_type"
         const val EXTRA_MESSAGE_TITLE = "extra_message_title"
         const val EXTRA_MESSAGE_BODY = "extra_message_body"
         const val EXTRA_MESSAGE_DATA = "extra_message_data"

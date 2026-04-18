@@ -48,9 +48,27 @@ class MessageAdapter(
         private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
         fun bind(message: PushMessage) {
+            binding.tvMessageType.text = message.messageType ?: "未知"
+            if (message.messageType == "透传消息") {
+                binding.tvMessageType.setTextColor(context.getColor(R.color.accent))
+                binding.tvMessageType.setBackgroundResource(R.drawable.bg_message_type_data)
+            } else {
+                binding.tvMessageType.setTextColor(context.getColor(R.color.success))
+                binding.tvMessageType.setBackgroundResource(R.drawable.bg_message_type)
+            }
+
             binding.tvMessageTitle.text = message.title ?: "(无标题)"
-            binding.tvMessageBody.text = message.body ?: message.data ?: "(无内容)"
+            binding.tvMessageBody.text = message.body ?: "(无内容)"
+            
+            if (!message.data.isNullOrEmpty()) {
+                binding.tvMessageData.text = "数据: ${message.data}"
+                binding.tvMessageData.visibility = View.VISIBLE
+            } else {
+                binding.tvMessageData.visibility = View.GONE
+            }
+            
             binding.tvMessageTime.text = dateFormat.format(Date(message.receivedTime))
+            binding.tvMessageId.text = "ID: ${message.messageId ?: "无"}"
             binding.tvSelectedIndicator.visibility = if (selectedMessages.contains(message.id)) View.VISIBLE else View.GONE
 
             val isSelected = selectedMessages.contains(message.id)
@@ -72,7 +90,6 @@ class MessageAdapter(
                         }
                     }
                     notifyItemChanged(adapterPosition)
-                    updateSelectedCount()
                 }
             }
 
@@ -81,14 +98,9 @@ class MessageAdapter(
                     selectedMessages.add(message.id)
                     onSelectionChanged?.invoke(true)
                     notifyItemChanged(adapterPosition)
-                    updateSelectedCount()
                 }
                 true
             }
-        }
-
-        private fun updateSelectedCount() {
-            // This will be handled by the activity
         }
     }
 
@@ -103,10 +115,13 @@ class MessageAdapter(
         val sb = StringBuilder()
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         selectedList.forEach { msg ->
+            sb.append("类型: ${msg.messageType ?: "未知"}\n")
             sb.append("标题: ${msg.title ?: "无"}\n")
-            sb.append("内容: ${msg.body ?: msg.data ?: "无"}\n")
+            sb.append("内容: ${msg.body ?: "无"}\n")
+            sb.append("数据: ${msg.data ?: "无"}\n")
             sb.append("时间: ${dateFormat.format(Date(msg.receivedTime))}\n")
-            sb.append("ID: ${msg.messageId}\n")
+            sb.append("消息ID: ${msg.messageId ?: "无"}\n")
+            sb.append("记录ID: ${msg.id}\n")
             sb.append("------------------------\n")
         }
 

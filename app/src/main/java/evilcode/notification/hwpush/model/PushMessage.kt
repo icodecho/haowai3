@@ -8,6 +8,7 @@ data class PushMessage(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val messageId: String?,
+    val messageType: String?, // "通知消息" 或 "透传消息"
     val title: String?,
     val body: String?,
     val data: String?,

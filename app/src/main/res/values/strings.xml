@@ -26,6 +26,9 @@
     <string name="message_title">消息标题</string>
     <string name="message_data">数据内容</string>
     <string name="message_id">消息ID</string>
+    <string name="message_type">消息类型</string>
+    <string name="message_type_notification">通知消息</string>
+    <string name="message_type_data">透传消息</string>
     <string name="delete_confirm">确定要删除选中的记录吗？</string>
     <string name="clear_confirm">确定要清空所有记录吗？</string>
     <string name="copy_success">已复制到剪贴板</string>
