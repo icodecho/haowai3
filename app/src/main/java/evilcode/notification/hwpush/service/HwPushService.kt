@@ -46,21 +46,26 @@ class HwPushService : HmsMessageService() {
         if (notification != null) {
             title = notification.title
             body = notification.body
-            dataStr = if (!data.isNullOrEmpty()) JSONObject(data).toString() else null
+            dataStr = if (!data.isNullOrEmpty()) data else null
             LogManager.i("HwPushService", "通知栏消息 - Title: $title, Body: $body, Data: $dataStr")
         } else if (!data.isNullOrEmpty()) {
+            dataStr = data
             try {
                 val json = JSONObject(data)
                 title = json.optString("title", json.optString("msg", null))
-                body = json.optString("body", json.optString("content", json.optString("message", data)))
-                dataStr = data
-                LogManager.i("HwPushService", "透传消息 - Title: $title, Body: $body")
+                body = json.optString("body", json.optString("content", json.optString("message", null)))
+                if (title.isNullOrEmpty() && body.isNullOrEmpty()) {
+                    title = "透传消息"
+                    body = data
+                }
+                LogManager.i("HwPushService", "透传消息(JSON) - Title: $title, Body: $body, Data: $dataStr")
             } catch (e: Exception) {
-                title = null
+                title = "透传消息"
                 body = data
-                dataStr = data
-                LogManager.i("HwPushService", "透传消息(纯文本) - Body: $body")
+                LogManager.i("HwPushService", "透传消息(纯文本) - Body: $body, Data: $dataStr")
             }
+        } else {
+            LogManager.w("HwPushService", "Message has no notification and no data")
         }
 
         val pushMessage = PushMessage(
