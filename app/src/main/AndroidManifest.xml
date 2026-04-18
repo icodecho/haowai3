@@ -42,9 +42,14 @@
         <activity
             android:name=".PushNotifyReceiverActivity"
             android:exported="true"
-            android:theme="@style/Theme.HaoWai"
+            android:theme="@style/Theme.HaoWai.Translucent"
             android:taskAffinity=""
-            android:excludeFromRecents="true" />
+            android:excludeFromRecents="true">
+            <intent-filter>
+                <action android:name="evilcode.notification.hwpush.ACTION_OPEN_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name=".service.HwPushService"

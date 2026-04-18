@@ -2,58 +2,74 @@ package evilcode.notification.hwpush
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import evilcode.notification.hwpush.database.HaoWaiDatabase
 import evilcode.notification.hwpush.model.PushMessage
 import evilcode.notification.hwpush.util.LogManager
+import evilcode.notification.hwpush.util.TokenManager
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class PushNotifyReceiverActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        LogManager.i("PushNotifyReceiverActivity", "Activity started, received intent")
         
-        val title = intent.getStringExtra("title")
-        val body = intent.getStringExtra("body")
-        val msgId = intent.getStringExtra("msg_id")
-        val data = intent.getStringExtra("data")
-
-        LogManager.i("PushNotifyReceiver", "Received notification click - title: $title, body: $body, msgId: $msgId")
-
-        if (!title.isNullOrEmpty() || !body.isNullOrEmpty()) {
-            saveNotificationMessage(msgId, title, body, data)
-        }
-
-        val mainIntent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-        }
-        startActivity(mainIntent)
+        handleNotificationIntent(intent)
         finish()
     }
 
-    private fun saveNotificationMessage(msgId: String?, title: String?, body: String?, data: String?) {
-        val database = HaoWaiDatabase.getInstance(this)
-        val pushMessage = PushMessage(
-            messageId = msgId,
-            title = title ?: "(无标题)",
-            body = body ?: "(无内容)",
-            data = data,
-            token = null,
-            collapseKey = null,
-            sentTime = System.currentTimeMillis(),
-            receivedTime = System.currentTimeMillis()
-        )
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        LogManager.i("PushNotifyReceiverActivity", "onNewIntent called")
+        handleNotificationIntent(intent)
+        finish()
+    }
 
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                database.pushMessageDao().insertMessage(pushMessage)
-            }
-            LogManager.i("PushNotifyReceiver", "Notification message saved")
-            Toast.makeText(this@PushNotifyReceiverActivity, "消息已保存", Toast.LENGTH_SHORT).show()
+    private fun handleNotificationIntent(intent: Intent?) {
+        if (intent == null) {
+            LogManager.w("PushNotifyReceiverActivity", "Intent is null")
+            return
         }
+
+        val title = intent.getStringExtra("title")
+            ?: intent.getStringExtra("push_title")
+            ?: intent.getStringExtra("msg_title")
+        
+        val body = intent.getStringExtra("body")
+            ?: intent.getStringExtra("push_body")
+            ?: intent.getStringExtra("msg_body")
+        
+        val data = intent.getStringExtra("data")
+        val msgId = intent.getStringExtra("msgId")
+
+        LogManager.i("PushNotifyReceiverActivity", "Title: $title, Body: $body, Data: $data")
+
+        if (!title.isNullOrEmpty() || !body.isNullOrEmpty()) {
+            val pushMessage = PushMessage(
+                messageId = msgId ?: System.currentTimeMillis().toString(),
+                title = title,
+                body = body,
+                data = data,
+                token = TokenManager.getToken(),
+                collapseKey = null,
+                sentTime = System.currentTimeMillis(),
+                receivedTime = System.currentTimeMillis()
+            )
+
+            CoroutineScope(Dispatchers.IO).launch {
+                val database = HaoWaiDatabase.getInstance(this@PushNotifyReceiverActivity)
+                database.pushMessageDao().insertMessage(pushMessage)
+                LogManager.i("PushNotifyReceiverActivity", "Message saved via click_action")
+            }
+        } else {
+            LogManager.w("PushNotifyReceiverActivity", "No message content found in intent")
+        }
+
+        val mainIntent = Intent(this, MainActivity::class.java)
+        mainIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        startActivity(mainIntent)
     }
 }

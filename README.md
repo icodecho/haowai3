@@ -147,6 +147,70 @@ class HwPushService : HmsMessageService() {
 4. 测试建议使用华为手机（EMUI 10及以上）以获得最佳推送体验
 5. 非华为手机需安装 HMS Core 才能使用推送功能
 
+## 推送端消息体格式
+
+### 方案一：通知栏消息 + click_action（点击通知后保存）
+
+通知栏消息由系统NC展示，用户点击后触发Activity保存记录：
+
+```json
+{
+    "message": {
+        "notification": {
+            "title": "消息标题",
+            "body": "消息内容"
+        },
+        "android": {
+            "notification": {
+                "click_action": {
+                    "type": 1,
+                    "action": "evilcode.notification.hwpush.ACTION_OPEN_MESSAGE"
+                }
+            }
+        },
+        "token": ["用户PushToken"]
+    }
+}
+```
+
+### 方案二：透传消息（实时自动保存）
+
+使用透传消息，onMessageReceived实时接收并保存：
+
+```json
+{
+    "message": {
+        "data": "{\"title\":\"消息标题\",\"body\":\"消息内容\"}",
+        "android": {},
+        "token": ["用户PushToken"]
+    }
+}
+```
+
+### 方案三：前台通知处理（应用在前台时自动保存）
+
+设置foreground_show=false，应用在前台时走onMessageReceived：
+
+```json
+{
+    "message": {
+        "notification": {
+            "title": "消息标题",
+            "body": "消息内容"
+        },
+        "android": {
+            "notification": {
+                "foreground_show": false,
+                "click_action": {
+                    "type": 3
+                }
+            }
+        },
+        "token": ["用户PushToken"]
+    }
+}
+```
+
 ## 许可证
 
 本项目仅供参考学习使用。

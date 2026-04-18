@@ -47,7 +47,12 @@ class HwPushService : HmsMessageService() {
             title = notification.title
             body = notification.body
             dataStr = if (!data.isNullOrEmpty()) data else null
-            LogManager.i("HwPushService", "通知栏消息 - Title: $title, Body: $body, Data: $dataStr")
+            if (!data.isNullOrEmpty()) {
+                LogManager.i("HwPushService", "透传消息 - Title: $title, Body: $body, Data: $dataStr")
+            } else {
+                LogManager.i("HwPushService", "通知消息 - Title: $title, Body: $body, Data: $dataStr")
+            }
+            
         } else if (!data.isNullOrEmpty()) {
             dataStr = data
             try {
