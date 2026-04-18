@@ -11,6 +11,7 @@ object TokenManager {
 
     fun init(context: Context) {
         prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        LogManager.i("TokenManager", "Initialized with SharedPreferences: $PREF_NAME")
     }
 
     fun saveToken(token: String) {
@@ -19,10 +20,13 @@ object TokenManager {
             putLong(KEY_TOKEN_TIME, System.currentTimeMillis())
             apply()
         }
+        LogManager.i("TokenManager", "Token saved successfully")
     }
 
     fun getToken(): String? {
-        return prefs.getString(KEY_TOKEN, null)
+        val token = prefs.getString(KEY_TOKEN, null)
+        LogManager.i("TokenManager", "Token retrieved: ${if (token.isNullOrEmpty()) "null" else "exists"}")
+        return token
     }
 
     fun getTokenTime(): Long {
@@ -35,5 +39,6 @@ object TokenManager {
             remove(KEY_TOKEN_TIME)
             apply()
         }
+        LogManager.i("TokenManager", "Token cleared successfully")
     }
 }

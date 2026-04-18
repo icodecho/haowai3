@@ -29,10 +29,13 @@ class MessageListActivity : AppCompatActivity() {
         setupRecyclerView()
         setupActions()
         loadMessages()
+        
+        LogManager.i("MessageListActivity", "Activity created")
     }
 
     private fun setupToolbar() {
         binding.toolbar.setNavigationOnClickListener {
+            LogManager.i("MessageListActivity", "Back button clicked, finishing activity")
             finish()
         }
     }
@@ -41,6 +44,7 @@ class MessageListActivity : AppCompatActivity() {
         adapter = MessageAdapter(this)
         binding.rvMessages.layoutManager = LinearLayoutManager(this)
         binding.rvMessages.adapter = adapter
+        LogManager.i("MessageListActivity", "RecyclerView initialized")
 
         adapter.onSelectionChanged = { hasSelection ->
             if (hasSelection) {
@@ -54,21 +58,25 @@ class MessageListActivity : AppCompatActivity() {
 
     private fun setupActions() {
         binding.btnCopy.setOnClickListener {
+            LogManager.i("MessageListActivity", "Copy selected messages to clipboard")
             adapter.copySelectedToClipboard()
             exitSelectionMode()
         }
 
         binding.btnDelete.setOnClickListener {
+            LogManager.i("MessageListActivity", "Delete selected messages dialog shown")
             adapter.showDeleteDialog {
                 deleteSelectedMessages()
             }
         }
 
         binding.btnCancel.setOnClickListener {
+            LogManager.i("MessageListActivity", "Cancel selection mode")
             exitSelectionMode()
         }
 
         binding.btnClearAll.setOnClickListener {
+            LogManager.i("MessageListActivity", "Clear all messages dialog shown")
             adapter.showClearAllDialog {
                 clearAllMessages()
             }

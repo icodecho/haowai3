@@ -30,10 +30,18 @@ class LogListActivity : AppCompatActivity() {
         setupRecyclerView()
         setupActions()
         loadLogs()
+        
+        LogManager.i("LogListActivity", "Activity created")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        LogManager.i("LogListActivity", "Activity destroyed")
     }
 
     private fun setupToolbar() {
         binding.toolbar.setNavigationOnClickListener {
+            LogManager.i("LogListActivity", "Back button clicked, finishing activity")
             finish()
         }
     }
@@ -42,10 +50,12 @@ class LogListActivity : AppCompatActivity() {
         adapter = LogAdapter()
         binding.rvLogs.layoutManager = LinearLayoutManager(this)
         binding.rvLogs.adapter = adapter
+        LogManager.i("LogListActivity", "RecyclerView initialized")
     }
 
     private fun setupActions() {
         binding.btnClearAll.setOnClickListener {
+            LogManager.i("LogListActivity", "Clear all logs dialog shown")
             MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.clear_confirm)
                 .setPositiveButton(R.string.btn_confirm) { _, _ ->

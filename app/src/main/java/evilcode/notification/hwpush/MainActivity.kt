@@ -61,20 +61,25 @@ class MainActivity : AppCompatActivity() {
         setupViews()
         registerReceivers()
         loadToken()
+        
+        LogManager.i("MainActivity", "Activity created")
     }
 
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(tokenReceiver)
         hideTokenHandler.removeCallbacks(hideTokenRunnable)
+        LogManager.i("MainActivity", "Activity destroyed")
     }
 
     private fun setupViews() {
         binding.btnGetToken.setOnClickListener {
+            LogManager.i("MainActivity", "User clicked get token button")
             getToken()
         }
 
         binding.btnDeleteToken.setOnClickListener {
+            LogManager.i("MainActivity", "User clicked delete token button")
             deleteToken()
         }
 
@@ -88,12 +93,14 @@ class MainActivity : AppCompatActivity() {
                 hideTokenHandler.removeCallbacks(hideTokenRunnable)
                 updateTokenDisplay()
                 binding.btnShowToken.text = getString(R.string.btn_show_token)
+                LogManager.i("MainActivity", "Token hidden")
             } else {
                 isTokenVisible = true
                 updateTokenDisplay()
                 binding.btnShowToken.text = "隐藏TOKEN"
                 hideTokenHandler.removeCallbacks(hideTokenRunnable)
                 hideTokenHandler.postDelayed(hideTokenRunnable, 10000)
+                LogManager.i("MainActivity", "Token shown (will auto-hide in 10s)")
             }
         }
 
@@ -107,13 +114,16 @@ class MainActivity : AppCompatActivity() {
             val clip = ClipData.newPlainText("Push Token", token)
             clipboard.setPrimaryClip(clip)
             Toast.makeText(this, R.string.copy_success, Toast.LENGTH_SHORT).show()
+            LogManager.i("MainActivity", "Token copied to clipboard")
         }
 
         binding.btnViewMessages.setOnClickListener {
+            LogManager.i("MainActivity", "Navigate to message list")
             startActivity(Intent(this, MessageListActivity::class.java))
         }
 
         binding.btnViewLogs.setOnClickListener {
+            LogManager.i("MainActivity", "Navigate to log list")
             startActivity(Intent(this, LogListActivity::class.java))
         }
     }
@@ -124,6 +134,7 @@ class MainActivity : AppCompatActivity() {
             addAction(HwPushService.ACTION_MESSAGE_RECEIVED)
         }
         registerReceiver(tokenReceiver, filter)
+        LogManager.i("MainActivity", "Broadcast receivers registered")
     }
 
     private fun loadToken() {
@@ -131,6 +142,9 @@ class MainActivity : AppCompatActivity() {
         if (!token.isNullOrEmpty()) {
             fullToken = token
             updateTokenDisplay()
+            LogManager.i("MainActivity", "Cached token loaded")
+        } else {
+            LogManager.i("MainActivity", "No cached token found")
         }
     }
 
