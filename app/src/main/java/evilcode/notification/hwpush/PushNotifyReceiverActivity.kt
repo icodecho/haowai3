@@ -33,51 +33,77 @@ class PushNotifyReceiverActivity : AppCompatActivity() {
             LogManager.w("PushNotifyReceiverActivity", "Intent is null")
             return
         }
-        LogManager.i("PushNotifyReceiverActivity", "Intent action: ${intent.action}")
-        LogManager.i("PushNotifyReceiverActivity", "Intent data: ${intent.data}")
-        
+        LogManager.i("PushNotifyReceiverActivity", "=== Intent Info ===")
+        LogManager.i("PushNotifyReceiverActivity", "Action: ${intent.action}")
+        LogManager.i("PushNotifyReceiverActivity", "Type: ${intent.type}")
+        LogManager.i("PushNotifyReceiverActivity", "Data URI: ${intent.data}")
+        LogManager.i("PushNotifyReceiverActivity", "Scheme: ${intent.scheme}")
+
         val extras = intent.extras
         if (extras != null) {
+            LogManager.i("PushNotifyReceiverActivity", "Extras count: ${extras.keySet().size}")
             for (key in extras.keySet()) {
                 val value = extras.get(key)
-                LogManager.i("PushNotifyReceiverActivity", "Extra key: $key, value: $value")
+                LogManager.i("PushNotifyReceiverActivity", "Extra [$key] = $value")
             }
         } else {
-            LogManager.w("PushNotifyReceiverActivity", "Intent extras is null")
+            LogManager.w("PushNotifyReceiverActivity", "Extras bundle is null")
         }
     }
 
     private fun handleNotificationIntent(intent: Intent?) {
         if (intent == null) {
-            LogManager.w("PushNotifyReceiverActivity", "Intent is null")
+            LogManager.w("PushNotifyReceiverActivity", "Intent is null, abort")
             return
         }
 
-        val extras = intent.extras
         var title: String? = null
         var body: String? = null
         var dataStr: String? = null
         var msgId: String? = null
 
+        val extras = intent.extras
         if (extras != null) {
-            title = extras.getString("title")
-                ?: extras.getString("push_title")
-                ?: extras.getString("msg_title")
-                ?: extras.getString("HW_NOTIFICATION_TITLE")
-            
-            body = extras.getString("body")
-                ?: extras.getString("push_body")
-                ?: extras.getString("msg_body")
-                ?: extras.getString("HW_NOTIFICATION_BODY")
-            
             dataStr = extras.getString("data")
-                ?: extras.getString("msg_data")
-            
+
             msgId = extras.getString("msgId")
                 ?: extras.getString("msg_id")
+                ?: extras.getString("_hw_msg_id")
                 ?: extras.getString("HW_MSG_ID")
 
-            if (dataStr.isNullOrEmpty() && title == null && body == null) {
+            if (!dataStr.isNullOrEmpty()) {
+                try {
+                    val json = JSONObject(dataStr)
+                    title = json.optString("title", null)
+                        ?: json.optString("msg", null)
+                    body = json.optString("body", null)
+                        ?: json.optString("content", null)
+                        ?: json.optString("message", null)
+                    LogManager.i("PushNotifyReceiverActivity", "Parsed data JSON - title: $title, body: $body")
+                } catch (e: Exception) {
+                    LogManager.e("PushNotifyReceiverActivity", "Failed to parse data JSON: ${e.message}")
+                }
+            }
+
+            if (title.isNullOrEmpty() && body.isNullOrEmpty()) {
+                title = extras.getString("title")
+                    ?: extras.getString("push_title")
+                    ?: extras.getString("msg_title")
+                    ?: extras.getString("HW_NOTIFICATION_TITLE")
+                    ?: extras.getString("hw_noti_title")
+
+                body = extras.getString("body")
+                    ?: extras.getString("push_body")
+                    ?: extras.getString("msg_body")
+                    ?: extras.getString("HW_NOTIFICATION_BODY")
+                    ?: extras.getString("hw_noti_body")
+
+                if (!title.isNullOrEmpty() || !body.isNullOrEmpty()) {
+                    LogManager.i("PushNotifyReceiverActivity", "Got title/body directly from extras")
+                }
+            }
+
+            if (title.isNullOrEmpty() && body.isNullOrEmpty() && dataStr.isNullOrEmpty()) {
                 for (key in extras.keySet()) {
                     val value = extras.getString(key)
                     if (!value.isNullOrEmpty() && (value.startsWith("{") || value.startsWith("["))) {
@@ -85,12 +111,12 @@ class PushNotifyReceiverActivity : AppCompatActivity() {
                             val json = JSONObject(value)
                             title = json.optString("title", json.optString("msg", null))
                             body = json.optString("body", json.optString("content", json.optString("message", null)))
-                            if (title.isNullOrEmpty() && body.isNullOrEmpty()) {
+                            if (!title.isNullOrEmpty() || !body.isNullOrEmpty()) {
                                 dataStr = value
-                                title = "通知消息"
+                                LogManager.i("PushNotifyReceiverActivity", "Found JSON in extra [$key]")
                             }
                         } catch (e: Exception) {
-                            // not json
+                            // ignore
                         }
                         break
                     }
@@ -98,7 +124,7 @@ class PushNotifyReceiverActivity : AppCompatActivity() {
             }
         }
 
-        LogManager.i("PushNotifyReceiverActivity", "Parsed - Title: $title, Body: $body, Data: $dataStr")
+        LogManager.i("PushNotifyReceiverActivity", "Final result - Title: $title, Body: $body, Data: $dataStr, msgId: $msgId")
 
         if (!title.isNullOrEmpty() || !body.isNullOrEmpty()) {
             val pushMessage = PushMessage(
@@ -115,10 +141,10 @@ class PushNotifyReceiverActivity : AppCompatActivity() {
             CoroutineScope(Dispatchers.IO).launch {
                 val database = HaoWaiDatabase.getInstance(this@PushNotifyReceiverActivity)
                 database.pushMessageDao().insertMessage(pushMessage)
-                LogManager.i("PushNotifyReceiverActivity", "Message saved via click_action")
+                LogManager.i("PushNotifyReceiverActivity", "Message saved successfully: ${pushMessage.title}")
             }
         } else {
-            LogManager.w("PushNotifyReceiverActivity", "No message content found in intent")
+            LogManager.w("PushNotifyReceiverActivity", "No message content found, cannot save")
         }
 
         val mainIntent = Intent(this, MainActivity::class.java)
