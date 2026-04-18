@@ -46,22 +46,40 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/token_status"
+                    android:text="@string/token_label"
                     android:textSize="14sp"
                     android:textColor="@color/text_secondary"
                     android:layout_marginBottom="8dp" />
 
-                <TextView
-                    android:id="@+id/tvToken"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/token_not_obtained"
-                    android:textSize="12sp"
-                    android:textColor="@color/text_hint"
-                    android:fontFamily="monospace"
-                    android:layout_marginBottom="16dp"
-                    android:maxLines="3"
-                    android:ellipsize="end" />
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:id="@+id/tvToken"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/token_not_obtained"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_hint"
+                        android:fontFamily="monospace"
+                        android:maxLines="3"
+                        android:ellipsize="end"
+                        android:layout_gravity="center_vertical" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnShowToken"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/btn_show_token"
+                        android:textSize="11sp"
+                        android:padding="8dp"
+                        android:layout_marginStart="8dp"
+                        style="@style/Widget.Material3.Button.TextButton" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -75,7 +93,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/btn_get_token"
-                        android:layout_marginEnd="8dp"
+                        android:layout_marginEnd="4dp"
                         style="@style/Widget.Material3.Button" />
 
                     <com.google.android.material.button.MaterialButton
@@ -84,9 +102,17 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/btn_delete_token"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="4dp"
                         style="@style/Widget.Material3.Button.OutlinedButton" />
                 </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCopyToken"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_copy_token"
+                    android:layout_marginTop="12dp"
+                    style="@style/Widget.Material3.Button.OutlinedButton" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

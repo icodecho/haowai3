@@ -1,11 +1,14 @@
 package evilcode.notification.hwpush
 
 import android.content.BroadcastReceiver
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.text.TextUtils
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -21,13 +24,23 @@ import kotlinx.coroutines.withContext
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private var fullToken: String? = null
+    private var isTokenVisible = false
+    private val hideTokenHandler = Handler(Looper.getMainLooper())
+    private val hideTokenRunnable = Runnable {
+        isTokenVisible = false
+        updateTokenDisplay()
+        binding.btnShowToken.text = getString(R.string.btn_show_token)
+    }
+
     private val tokenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 HwPushService.ACTION_TOKEN_UPDATE -> {
                     val token = intent.getStringExtra(HwPushService.EXTRA_TOKEN)
                     if (!token.isNullOrEmpty()) {
-                        updateTokenDisplay(token)
+                        fullToken = token
+                        updateTokenDisplay()
                         Toast.makeText(this@MainActivity, R.string.token_get_success, Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -42,9 +55,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        
+
         TokenManager.init(this)
-        
+
         setupViews()
         registerReceivers()
         loadToken()
@@ -53,6 +66,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(tokenReceiver)
+        hideTokenHandler.removeCallbacks(hideTokenRunnable)
     }
 
     private fun setupViews() {
@@ -62,6 +76,37 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnDeleteToken.setOnClickListener {
             deleteToken()
+        }
+
+        binding.btnShowToken.setOnClickListener {
+            if (fullToken.isNullOrEmpty()) {
+                Toast.makeText(this, R.string.token_not_obtained, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (isTokenVisible) {
+                isTokenVisible = false
+                hideTokenHandler.removeCallbacks(hideTokenRunnable)
+                updateTokenDisplay()
+                binding.btnShowToken.text = getString(R.string.btn_show_token)
+            } else {
+                isTokenVisible = true
+                updateTokenDisplay()
+                binding.btnShowToken.text = "隐藏TOKEN"
+                hideTokenHandler.removeCallbacks(hideTokenRunnable)
+                hideTokenHandler.postDelayed(hideTokenRunnable, 10000)
+            }
+        }
+
+        binding.btnCopyToken.setOnClickListener {
+            val token = fullToken
+            if (token.isNullOrEmpty()) {
+                Toast.makeText(this, R.string.token_not_obtained, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("Push Token", token)
+            clipboard.setPrimaryClip(clip)
+            Toast.makeText(this, R.string.copy_success, Toast.LENGTH_SHORT).show()
         }
 
         binding.btnViewMessages.setOnClickListener {
@@ -84,7 +129,8 @@ class MainActivity : AppCompatActivity() {
     private fun loadToken() {
         val token = TokenManager.getToken()
         if (!token.isNullOrEmpty()) {
-            updateTokenDisplay(token)
+            fullToken = token
+            updateTokenDisplay()
         }
     }
 
@@ -97,8 +143,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 LogManager.i("MainActivity", "getToken success")
                 if (!token.isNullOrEmpty()) {
+                    fullToken = token
                     TokenManager.saveToken(token)
-                    updateTokenDisplay(token)
+                    updateTokenDisplay()
                     Toast.makeText(this@MainActivity, R.string.token_get_success, Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this@MainActivity, R.string.token_get_failed, Toast.LENGTH_SHORT).show()
@@ -118,7 +165,11 @@ class MainActivity : AppCompatActivity() {
                     HmsInstanceId.getInstance(this@MainActivity).deleteToken(appId, "HCM")
                 }
                 TokenManager.clearToken()
-                updateTokenDisplay(null)
+                fullToken = null
+                isTokenVisible = false
+                hideTokenHandler.removeCallbacks(hideTokenRunnable)
+                updateTokenDisplay()
+                binding.btnShowToken.text = getString(R.string.btn_show_token)
                 LogManager.i("MainActivity", "deleteToken success")
                 Toast.makeText(this@MainActivity, R.string.token_delete_success, Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
@@ -128,14 +179,31 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateTokenDisplay(token: String?) {
+    private fun updateTokenDisplay() {
+        val token = fullToken
         if (token.isNullOrEmpty()) {
             binding.tvToken.setText(R.string.token_not_obtained)
             binding.tvToken.setTextColor(getColor(R.color.text_hint))
         } else {
-            binding.tvToken.text = token
-            binding.tvToken.setTextColor(getColor(R.color.success))
+            if (isTokenVisible) {
+                binding.tvToken.text = token
+                binding.tvToken.setTextColor(getColor(R.color.success))
+            } else {
+                binding.tvToken.text = maskToken(token)
+                binding.tvToken.setTextColor(getColor(R.color.accent))
+            }
         }
+    }
+
+    private fun maskToken(token: String): String {
+        if (token.length <= 16) {
+            return token
+        }
+        val prefix = token.take(8)
+        val suffix = token.takeLast(8)
+        val maskedLength = token.length - 16
+        val stars = "*".repeat(maskedLength)
+        return "$prefix$stars$suffix"
     }
 
     private fun getStringFromAgConnect(): String {
