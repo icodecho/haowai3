@@ -49,8 +49,9 @@ class MessageAdapter(
         private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
         fun bind(message: PushMessage) {
-            binding.tvMessageType.text = message.messageType ?: "未知"
-            if (message.messageType == "透传消息") {
+            val isDataMessage = !message.data.isNullOrEmpty()
+            binding.tvMessageType.text = if (isDataMessage) "透传消息" else "通知消息"
+            if (isDataMessage) {
                 binding.tvMessageType.setTextColor(context.getColor(R.color.accent))
                 binding.tvMessageType.setBackgroundResource(R.drawable.bg_message_type_data)
             } else {
