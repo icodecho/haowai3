@@ -44,7 +44,7 @@ class HwPushService : HmsMessageService() {
         var dataStr: String? = null
         var messageType = "notification" // 默认通知消息
         
-        if (notification != null) {
+        if (notification.title != null) {
             title = notification.title
             body = notification.body
             dataStr = if (!data.isNullOrEmpty()) data else null
