@@ -3,14 +3,15 @@ package evilcode.notification.hwpush.service
 import android.content.Intent
 import com.huawei.hms.push.HmsMessageService
 import com.huawei.hms.push.RemoteMessage
-import evilcode.notification.hwpush.HaoWaiApplication
 import evilcode.notification.hwpush.database.HaoWaiDatabase
 import evilcode.notification.hwpush.model.PushMessage
 import evilcode.notification.hwpush.util.LogManager
+import evilcode.notification.hwpush.util.NotificationHelper
 import evilcode.notification.hwpush.util.TokenManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 class HwPushService : HmsMessageService() {
 
@@ -36,42 +37,65 @@ class HwPushService : HmsMessageService() {
         }
 
         val notification = message.notification
-        val title = notification?.title
-        val body = notification?.body
         val data = message.data
         
-        val messageType = if (data != null) {
-            "透传消息"
-        } else {
-            "通知消息"
-        }
+        var title: String? = null
+        var body: String? = null
+        var dataStr: String? = null
         
-        LogManager.i("HwPushService", "Message type: $messageType, Title: $title, Body: $body, Data: $data")
+        if (notification != null) {
+            title = notification.title
+            body = notification.body
+            dataStr = if (!data.isNullOrEmpty()) JSONObject(data).toString() else null
+            LogManager.i("HwPushService", "通知栏消息 - Title: $title, Body: $body, Data: $dataStr")
+        } else if (!data.isNullOrEmpty()) {
+            try {
+                val json = JSONObject(data)
+                title = json.optString("title", json.optString("msg", null))
+                body = json.optString("body", json.optString("content", json.optString("message", data)))
+                dataStr = data
+                LogManager.i("HwPushService", "透传消息 - Title: $title, Body: $body")
+            } catch (e: Exception) {
+                title = null
+                body = data
+                dataStr = data
+                LogManager.i("HwPushService", "透传消息(纯文本) - Body: $body")
+            }
+        }
 
         val pushMessage = PushMessage(
             messageId = message.messageId,
-            messageType = messageType,
             title = title,
             body = body,
-            data = data,
+            data = dataStr,
             token = message.token,
             collapseKey = message.collapseKey,
             sentTime = message.sentTime,
             receivedTime = System.currentTimeMillis()
         )
 
-        val database = HaoWaiDatabase.getInstance(this)
         CoroutineScope(Dispatchers.IO).launch {
+            val database = HaoWaiDatabase.getInstance(this@HwPushService)
             database.pushMessageDao().insertMessage(pushMessage)
-            LogManager.i("HwPushService", "Message saved to database, type: $messageType")
+            LogManager.i("HwPushService", "Message saved to database")
         }
 
-        val intent = Intent(ACTION_MESSAGE_RECEIVED)
-        intent.putExtra(EXTRA_MESSAGE_TYPE, messageType)
-        intent.putExtra(EXTRA_MESSAGE_TITLE, title ?: "")
-        intent.putExtra(EXTRA_MESSAGE_BODY, body ?: "")
-        intent.putExtra(EXTRA_MESSAGE_DATA, data ?: "")
-        sendBroadcast(intent)
+        if (notification == null && !title.isNullOrEmpty()) {
+            val notifyId = NotificationHelper.generateNotifyId()
+            NotificationHelper.showNotification(
+                this,
+                notifyId,
+                title,
+                body ?: "",
+                message.messageId
+            )
+        }
+
+        val broadcastIntent = Intent(ACTION_MESSAGE_RECEIVED)
+        broadcastIntent.putExtra(EXTRA_MESSAGE_TITLE, title ?: "")
+        broadcastIntent.putExtra(EXTRA_MESSAGE_BODY, body ?: "")
+        broadcastIntent.putExtra(EXTRA_MESSAGE_DATA, dataStr ?: "")
+        sendBroadcast(broadcastIntent)
     }
 
     override fun onMessageSent(msgId: String?) {
@@ -86,7 +110,6 @@ class HwPushService : HmsMessageService() {
         const val ACTION_TOKEN_UPDATE = "evilcode.notification.hwpush.ACTION_TOKEN_UPDATE"
         const val ACTION_MESSAGE_RECEIVED = "evilcode.notification.hwpush.ACTION_MESSAGE_RECEIVED"
         const val EXTRA_TOKEN = "extra_token"
-        const val EXTRA_MESSAGE_TYPE = "extra_message_type"
         const val EXTRA_MESSAGE_TITLE = "extra_message_title"
         const val EXTRA_MESSAGE_BODY = "extra_message_body"
         const val EXTRA_MESSAGE_DATA = "extra_message_data"

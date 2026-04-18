@@ -39,6 +39,13 @@
             android:theme="@style/Theme.HaoWai"
             android:label="@string/title_log_list" />
 
+        <activity
+            android:name=".PushNotifyReceiverActivity"
+            android:exported="true"
+            android:theme="@style/Theme.HaoWai"
+            android:taskAffinity=""
+            android:excludeFromRecents="true" />
+
         <service
             android:name=".service.HwPushService"
             android:exported="false"
