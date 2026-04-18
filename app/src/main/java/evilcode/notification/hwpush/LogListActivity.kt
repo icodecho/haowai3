@@ -47,13 +47,44 @@ class LogListActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = LogAdapter()
+        adapter = LogAdapter(this)
         binding.rvLogs.layoutManager = LinearLayoutManager(this)
         binding.rvLogs.adapter = adapter
         LogManager.i("LogListActivity", "RecyclerView initialized")
+
+        adapter.onSelectionChanged = { hasSelection ->
+            if (hasSelection) {
+                binding.actionBar.visibility = View.VISIBLE
+                updateSelectedCount()
+            } else {
+                binding.actionBar.visibility = View.GONE
+            }
+        }
     }
 
     private fun setupActions() {
+        binding.btnCopy.setOnClickListener {
+            LogManager.i("LogListActivity", "Copy selected logs to clipboard")
+            adapter.copySelectedToClipboard()
+            exitSelectionMode()
+        }
+
+        binding.btnDelete.setOnClickListener {
+            LogManager.i("LogListActivity", "Delete selected logs dialog shown")
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.delete_confirm)
+                .setPositiveButton(R.string.btn_confirm) { _, _ ->
+                    deleteSelectedLogs()
+                }
+                .setNegativeButton(R.string.btn_cancel, null)
+                .show()
+        }
+
+        binding.btnCancel.setOnClickListener {
+            LogManager.i("LogListActivity", "Cancel selection mode")
+            exitSelectionMode()
+        }
+
         binding.btnClearAll.setOnClickListener {
             LogManager.i("LogListActivity", "Clear all logs dialog shown")
             MaterialAlertDialogBuilder(this)
@@ -86,5 +117,32 @@ class LogListActivity : AppCompatActivity() {
             Toast.makeText(this@LogListActivity, R.string.clear_success, Toast.LENGTH_SHORT).show()
             LogManager.i("LogListActivity", "Cleared all logs")
         }
+    }
+
+    private fun deleteSelectedLogs() {
+        val selectedList = adapter.getSelectedLogList()
+        if (selectedList.isEmpty()) return
+
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                database.appLogDao().deleteLogs(selectedList)
+            }
+            adapter.selectedLogs.clear()
+            loadLogs()
+            exitSelectionMode()
+            Toast.makeText(this@LogListActivity, R.string.delete_success, Toast.LENGTH_SHORT).show()
+            LogManager.i("LogListActivity", "Deleted ${selectedList.size} logs")
+        }
+    }
+
+    private fun exitSelectionMode() {
+        adapter.selectedLogs.clear()
+        adapter.notifyDataSetChanged()
+        binding.actionBar.visibility = View.GONE
+    }
+
+    private fun updateSelectedCount() {
+        val count = adapter.selectedLogs.size
+        binding.tvSelectedCount.text = getString(R.string.selected_count, count)
     }
 }
