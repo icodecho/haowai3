@@ -182,7 +182,7 @@ class MessageAdapter(
             if (copyId) {
                 sb.append("消息ID: ${msg.messageId ?: "无"}\n")
             }
-            sb.append("------------------------\n")
+            //sb.append("------------------------\n")
         }
 
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager

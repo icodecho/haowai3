@@ -26,6 +26,7 @@ class MessageListActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupToolbar()
+        setupSwipeRefresh()
         setupRecyclerView()
         setupActions()
         loadMessages()
@@ -38,6 +39,18 @@ class MessageListActivity : AppCompatActivity() {
             LogManager.i("MessageListActivity", "Back button clicked, finishing activity")
             finish()
         }
+    }
+
+    private fun setupSwipeRefresh() {
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            LogManager.i("MessageListActivity", "Swipe refresh triggered")
+            loadMessages()
+        }
+        binding.swipeRefreshLayout.setColorSchemeColors(
+            getColor(R.color.accent),
+            getColor(R.color.success),
+            getColor(R.color.error)
+        )
     }
 
     private fun setupRecyclerView() {
@@ -90,6 +103,7 @@ class MessageListActivity : AppCompatActivity() {
             }
             adapter.refreshData(messages)
             binding.tvEmpty.visibility = if (messages.isEmpty()) View.VISIBLE else View.GONE
+            binding.swipeRefreshLayout.isRefreshing = false
             LogManager.i("MessageListActivity", "Loaded ${messages.size} messages")
         }
     }
