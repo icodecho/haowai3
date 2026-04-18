@@ -9,7 +9,7 @@ import android.text.TextUtils
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.huawei.hms.push.HmsInstanceId
+import com.huawei.hms.aaid.HmsInstanceId
 import evilcode.notification.hwpush.databinding.ActivityMainBinding
 import evilcode.notification.hwpush.service.HwPushService
 import evilcode.notification.hwpush.util.LogManager
