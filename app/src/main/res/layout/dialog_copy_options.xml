@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <CheckBox
+        android:id="@+id/cbAll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="全部"
+        android:textSize="15sp"
+        android:textColor="@color/text_primary"
+        android:padding="8dp" />
+
+    <CheckBox
+        android:id="@+id/cbTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="标题"
+        android:textSize="15sp"
+        android:textColor="@color/text_primary"
+        android:padding="8dp" />
+
+    <CheckBox
+        android:id="@+id/cbBody"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="内容"
+        android:textSize="15sp"
+        android:textColor="@color/text_primary"
+        android:padding="8dp" />
+
+    <CheckBox
+        android:id="@+id/cbData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="数据"
+        android:textSize="15sp"
+        android:textColor="@color/text_primary"
+        android:padding="8dp" />
+
+    <CheckBox
+        android:id="@+id/cbTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="时间"
+        android:textSize="15sp"
+        android:textColor="@color/text_primary"
+        android:padding="8dp" />
+
+    <CheckBox
+        android:id="@+id/cbId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ID"
+        android:textSize="15sp"
+        android:textColor="@color/text_primary"
+        android:padding="8dp" />
+
+</LinearLayout>

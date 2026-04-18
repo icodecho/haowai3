@@ -58,8 +58,8 @@ class MessageListActivity : AppCompatActivity() {
 
     private fun setupActions() {
         binding.btnCopy.setOnClickListener {
-            LogManager.i("MessageListActivity", "Copy selected messages to clipboard")
-            adapter.copySelectedToClipboard()
+            LogManager.i("MessageListActivity", "Copy dialog shown")
+            adapter.showCopyOptionsDialog()
             exitSelectionMode()
         }
 

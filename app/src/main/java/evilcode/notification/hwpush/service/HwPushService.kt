@@ -40,10 +40,10 @@ class HwPushService : HmsMessageService() {
         val body = notification?.body
         val data = message.data
         
-        val messageType = if (notification != null) {
-            "通知消息"
-        } else {
+        val messageType = if (data != null) {
             "透传消息"
+        } else {
+            "通知消息"
         }
         
         LogManager.i("HwPushService", "Message type: $messageType, Title: $title, Body: $body, Data: $data")
