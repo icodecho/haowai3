@@ -21,14 +21,10 @@ android {
 
     signingConfigs {
         release {
-            def keystorePath = System.getenv('KEYSTORE_PATH') ?: '../doc/evilcode.jks'
-            def keystoreAlias = System.getenv('KEY_ALIAS') ?: 'evilcode'
-            def keystorePassword = System.getenv('KEY_PASSWORD') ?: '@evilcode1024'
-            def storePassword = System.getenv('STORE_PASSWORD') ?: '@evilcode1024'
-            storeFile file(keystorePath)
-            keyAlias keystoreAlias
-            keyPassword keystorePassword
-            storePassword storePassword
+            storeFile file(System.getenv('KEYSTORE_PATH') ?: '../doc/evilcode.jks')
+            keyAlias System.getenv('KEY_ALIAS') ?: 'evilcode'
+            keyPassword System.getenv('KEY_PASSWORD') ?: '@evilcode1024'
+            storePassword System.getenv('STORE_PASSWORD') ?: '@evilcode1024'
             v1SigningEnabled true
             v2SigningEnabled true
         }
