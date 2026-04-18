@@ -45,9 +45,7 @@ class PushNotifyReceiverActivity : AppCompatActivity() {
             for (key in extras.keySet()) {
                 val value = extras.get(key)
                 LogManager.i("PushNotifyReceiverActivity", "Extra [$key] = $value")
-                if($key == "analysisExt") {
-
-                }
+                
             }
         } else {
             LogManager.w("PushNotifyReceiverActivity", "Extras bundle is null")
