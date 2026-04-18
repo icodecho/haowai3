@@ -69,6 +69,10 @@ dependencies {
     
     // HMS Push SDK
     implementation 'com.huawei.hms:push:6.12.0.300'
+    implementation 'com.huawei.hms:hwid:6.12.0.300'
+    
+    // BouncyCastle for Huawei Security SDK
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
     
     // Room Database
     implementation 'androidx.room:room-runtime:2.6.1'

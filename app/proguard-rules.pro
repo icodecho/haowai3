@@ -13,3 +13,16 @@
 
 # Keep data models
 -keep class evilcode.notification.hwpush.model.** { *; }
+
+# BouncyCastle for Huawei Secure SDK
+-dontwarn org.bouncycastle.**
+-keep class org.bouncycastle.** { *; }
+
+# Huawei Secure Android Common
+-dontwarn com.huawei.secure.android.**
+-keep class com.huawei.secure.android.** { *; }
+
+# AGC
+-dontwarn com.huawei.agconnect.**
+-keep class com.huawei.agconnect.** { *; }
+-keep class com.huawei.hms.aaid.** { *; }
