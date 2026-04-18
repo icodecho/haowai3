@@ -22,7 +22,8 @@ abstract class HaoWaiDatabase : RoomDatabase() {
                     context.applicationContext,
                     HaoWaiDatabase::class.java,
                     "haowai_database"
-                ).build()
+                ).fallbackToDestructiveMigration()
+                 .build()
                 INSTANCE = instance
                 instance
             }
