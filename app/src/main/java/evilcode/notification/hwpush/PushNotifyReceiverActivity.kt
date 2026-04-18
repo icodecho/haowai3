@@ -45,6 +45,9 @@ class PushNotifyReceiverActivity : AppCompatActivity() {
             for (key in extras.keySet()) {
                 val value = extras.get(key)
                 LogManager.i("PushNotifyReceiverActivity", "Extra [$key] = $value")
+                if($key == "analysisExt") {
+
+                }
             }
         } else {
             LogManager.w("PushNotifyReceiverActivity", "Extras bundle is null")
@@ -66,7 +69,8 @@ class PushNotifyReceiverActivity : AppCompatActivity() {
         if (extras != null) {
             dataStr = extras.getString("data")
 
-            msgId = extras.getString("msgId")
+            msgId = extras.getString("_push_msgid")
+                ?: extras.getString("msgId")
                 ?: extras.getString("msg_id")
                 ?: extras.getString("_hw_msg_id")
                 ?: extras.getString("HW_MSG_ID")
@@ -97,6 +101,12 @@ class PushNotifyReceiverActivity : AppCompatActivity() {
                     ?: extras.getString("msg_body")
                     ?: extras.getString("HW_NOTIFICATION_BODY")
                     ?: extras.getString("hw_noti_body")
+
+                msgId = extras.getString("_push_msgid")
+                    ?: extras.getString("msgId")
+                    ?: extras.getString("msg_id")
+                    ?: extras.getString("_hw_msg_id")
+                    ?: extras.getString("HW_MSG_ID")
 
                 if (!title.isNullOrEmpty() || !body.isNullOrEmpty()) {
                     LogManager.i("PushNotifyReceiverActivity", "Got title/body directly from extras")

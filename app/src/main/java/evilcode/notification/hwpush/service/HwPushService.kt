@@ -42,32 +42,37 @@ class HwPushService : HmsMessageService() {
         var title: String? = null
         var body: String? = null
         var dataStr: String? = null
+        var messageType = "notification" // 默认通知消息
         
         if (notification != null) {
             title = notification.title
             body = notification.body
             dataStr = if (!data.isNullOrEmpty()) data else null
             if (!data.isNullOrEmpty()) {
-                LogManager.i("HwPushService", "透传消息 - Title: $title, Body: $body, Data: $dataStr")
+                messageType = "notification_with_data"
+                LogManager.i("HwPushService", "通知消息(含透传数据) - Title: $title, Body: $body, Data: $dataStr")
             } else {
-                LogManager.i("HwPushService", "通知消息 - Title: $title, Body: $body, Data: $dataStr")
+                messageType = "notification"
+                LogManager.i("HwPushService", "通知消息 - Title: $title, Body: $body")
             }
-            
         } else if (!data.isNullOrEmpty()) {
             dataStr = data
+            messageType = "data"
             try {
                 val json = JSONObject(data)
-                title = json.optString("title", json.optString("msg", null))
-                body = json.optString("body", json.optString("content", json.optString("message", null)))
+                title = json.optString("title", null)
+                body = json.optString("body", null)
                 if (title.isNullOrEmpty() && body.isNullOrEmpty()) {
-                    title = "透传消息"
+                    title = getString(evilcode.notification.hwpush.R.string.app_name)
                     body = data
+                    LogManager.i("HwPushService", "透传消息(无title/body) - 使用应用名称, Body: $body")
+                } else {
+                    LogManager.i("HwPushService", "透传消息(有title/body) - Title: $title, Body: $body")
                 }
-                LogManager.i("HwPushService", "透传消息(JSON) - Title: $title, Body: $body, Data: $dataStr")
             } catch (e: Exception) {
-                title = "透传消息"
+                title = getString(evilcode.notification.hwpush.R.string.app_name)
                 body = data
-                LogManager.i("HwPushService", "透传消息(纯文本) - Body: $body, Data: $dataStr")
+                LogManager.i("HwPushService", "透传消息(非JSON) - 使用应用名称, Body: $body")
             }
         } else {
             LogManager.w("HwPushService", "Message has no notification and no data")
@@ -90,7 +95,8 @@ class HwPushService : HmsMessageService() {
             LogManager.i("HwPushService", "Message saved to database")
         }
 
-        if (notification == null && !title.isNullOrEmpty()) {
+        if (messageType == "data" && !title.isNullOrEmpty()) {
+            LogManager.i("HwPushService", "Pass-through message received, showing notification")
             val notifyId = NotificationHelper.generateNotifyId()
             NotificationHelper.showNotification(
                 this,
