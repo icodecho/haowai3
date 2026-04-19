@@ -92,9 +92,9 @@ class HwPushService : HmsMessageService() {
 
         val pushMessage = PushMessage(
             messageId = message.messageId,
-            title = title,
-            body = body,
-            data = dataStr,
+            title = title ?: "(无标题)",
+            body = body ?: "(无标题)",
+            data = dataStr ?: data,
             token = message.token,
             collapseKey = message.collapseKey,
             sentTime = message.sentTime,
