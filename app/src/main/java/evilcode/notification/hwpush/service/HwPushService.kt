@@ -43,11 +43,30 @@ class HwPushService : HmsMessageService() {
         var body: String? = null
         var dataStr: String? = null
         var messageType = "notification" // 默认通知消息
-        
-        if (notification != null) {
-            LogManager.i("HwPushService", "notification - Title: ${notification.title}, Body: ${notification.body}")
-        } else {
-            LogManager.w("HwPushService", "notification is null")
+        //遍历notification
+        notification?.let {
+            LogManager.i("HwPushService", "遍历notification:")
+            LogManager.i("HwPushService", "  title: ${it.title}")
+            LogManager.i("HwPushService", "  body: ${it.body}")
+            LogManager.i("HwPushService", "  icon: ${it.icon}")
+            LogManager.i("HwPushService", "  color: ${it.color}")
+            LogManager.i("HwPushService", "  sound: ${it.sound}")
+            LogManager.i("HwPushService", "  tag: ${it.tag}")
+            LogManager.i("HwPushService", "  channelId: ${it.channelId}")
+            LogManager.i("HwPushService", "  imageUrl: ${it.imageUrl}")
+            LogManager.i("HwPushService", "  link: ${it.link}")
+            LogManager.i("HwPushService", "  notifyId: ${it.notifyId}")
+            LogManager.i("HwPushService", "  when: ${it.`when`}")
+            LogManager.i("HwPushService", "  lightSettings: ${it.lightSettings?.contentToString()}")
+            LogManager.i("HwPushService", "  vibrateConfig: ${it.vibrateConfig?.contentToString()}")
+            LogManager.i("HwPushService", "  visibility: ${it.visibility}")
+            LogManager.i("HwPushService", "  importance: ${it.importance}")
+            LogManager.i("HwPushService", "  ticker: ${it.ticker}")
+            LogManager.i("HwPushService", "  vibrateTimings: ${it.vibrateTimings?.contentToString()}")
+            LogManager.i("HwPushService", "  localOnly: ${it.isLocalOnly}")
+            LogManager.i("HwPushService", "  defaultSound: ${it.isDefaultSound}")
+            LogManager.i("HwPushService", "  defaultVibrate: ${it.isDefaultVibrate}")
+            LogManager.i("HwPushService", "  defaultLight: ${it.isDefaultLight}")
         }
         
         if (notification.title != null) {
