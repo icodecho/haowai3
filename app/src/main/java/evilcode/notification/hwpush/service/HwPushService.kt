@@ -62,7 +62,7 @@ class HwPushService : HmsMessageService() {
             LogManager.i("HwPushService", "  visibility: ${it.visibility}")
             LogManager.i("HwPushService", "  importance: ${it.importance}")
             LogManager.i("HwPushService", "  ticker: ${it.ticker}")
-            LogManager.i("HwPushService", "  vibrateTimings: ${it.vibrateTimings?.contentToString()}")
+            //LogManager.i("HwPushService", "  vibrateTimings: ${it.vibrateTimings?.contentToString()}")
             LogManager.i("HwPushService", "  localOnly: ${it.isLocalOnly}")
             LogManager.i("HwPushService", "  defaultSound: ${it.isDefaultSound}")
             LogManager.i("HwPushService", "  defaultVibrate: ${it.isDefaultVibrate}")
