@@ -56,7 +56,7 @@ class PushNotifyReceiverActivity : AppCompatActivity() {
             LogManager.w("PushNotifyReceiverActivity", "Extras bundle is null")
         }
         //遍历extras
-        intent?.let {
+        extras?.let {
             LogManager.i("PushNotifyReceiverActivity", "遍历extras:")
             LogManager.i("PushNotifyReceiverActivity", "  extras: $it")
         }

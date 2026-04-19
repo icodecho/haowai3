@@ -35,6 +35,11 @@ class HwPushService : HmsMessageService() {
             LogManager.e("HwPushService", "Received message is null")
             return
         }
+        //遍历message
+        message?.let {
+            LogManager.i("HwPushService", "遍历message:")
+            LogManager.i("HwPushService", "  message: $it")
+        }
 
         val notification = message.notification
         val data = message.data
