@@ -43,20 +43,11 @@ class HwPushService : HmsMessageService() {
         var body: String? = null
         var dataStr: String? = null
         var messageType = "notification" // 默认通知消息
-
-        if (notification != null) { //测试代码，遍历notification
-            LogManager.i("HwPushService", "notification count: ${notification.keySet().size}")
-            for (key in notification.keySet()) {
-                val value = notification.get(key)
-                LogManager.i("HwPushService", "notification [$key] = $value")
-                for (key2 in value.keySet()) {
-                    val value2 = value.get(key2)
-                    LogManager.i("HwPushService", "notification $value [$key2] = $value2")
-                }
-                
-            }
+        
+        if (notification != null) {
+            LogManager.i("HwPushService", "notification - Title: ${notification.title}, Body: ${notification.body}")
         } else {
-            LogManager.w("HwPushService", "notification bundle is null")
+            LogManager.w("HwPushService", "notification is null")
         }
         
         if (notification.title != null) {
