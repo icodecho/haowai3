@@ -48,7 +48,10 @@ class PushNotifyReceiverActivity : AppCompatActivity() {
             val value = extras.get(key)
             LogManager.i("PushNotifyReceiverActivity", "遍历extras: Key: $key, Value: $value")
             value?.let {
-                LogManager.i("PushNotifyReceiverActivity", "遍历extras $key: $it")
+                LogManager.i("PushNotifyReceiverActivity", "遍历extras-2: $it")
+                it?.let {
+                    LogManager.i("PushNotifyReceiverActivity", "遍历extras-3: $it")
+                }
             }
         }
     }
