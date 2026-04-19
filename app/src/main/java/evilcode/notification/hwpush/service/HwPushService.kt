@@ -37,8 +37,7 @@ class HwPushService : HmsMessageService() {
         }
         //遍历message
         message?.let {
-            LogManager.i("HwPushService", "遍历message:")
-            LogManager.i("HwPushService", "  message: $it")
+            LogManager.i("HwPushService", "遍历message: $it")
         }
 
         val notification = message.notification
@@ -50,13 +49,11 @@ class HwPushService : HmsMessageService() {
         var messageType = "notification" // 默认通知消息
         //遍历notification
         notification?.let {
-            LogManager.i("HwPushService", "遍历notification:")
-            LogManager.i("HwPushService", "  title: $it")
+            LogManager.i("HwPushService", "遍历notification: $it")
         }
         //遍历data
         data?.let {
-            LogManager.i("HwPushService", "遍历data:")
-            LogManager.i("HwPushService", "  data: $it")
+            LogManager.i("HwPushService", "遍历data: $it")
         }
         
         if (notification.title != null) {

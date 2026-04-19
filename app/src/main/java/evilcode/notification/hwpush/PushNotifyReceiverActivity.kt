@@ -33,32 +33,15 @@ class PushNotifyReceiverActivity : AppCompatActivity() {
             LogManager.w("PushNotifyReceiverActivity", "Intent is null")
             return
         }
-        LogManager.i("PushNotifyReceiverActivity", "=== Intent Info ===")
-        LogManager.i("PushNotifyReceiverActivity", "Action: ${intent.action}")
-        LogManager.i("PushNotifyReceiverActivity", "Type: ${intent.type}")
-        LogManager.i("PushNotifyReceiverActivity", "Data URI: ${intent.data}")
-        LogManager.i("PushNotifyReceiverActivity", "Scheme: ${intent.scheme}")
         //遍历intent
         intent?.let {
-            LogManager.i("PushNotifyReceiverActivity", "遍历intent:")
-            LogManager.i("PushNotifyReceiverActivity", "  intent: $it")
+            LogManager.i("PushNotifyReceiverActivity", "遍历intent: $it")
         }
 
         val extras = intent.extras
-        if (extras != null) {
-            LogManager.i("PushNotifyReceiverActivity", "Extras count: ${extras.keySet().size}")
-            for (key in extras.keySet()) {
-                val value = extras.get(key)
-                LogManager.i("PushNotifyReceiverActivity", "Extra [$key] = $value")
-                
-            }
-        } else {
-            LogManager.w("PushNotifyReceiverActivity", "Extras bundle is null")
-        }
         //遍历extras
         extras?.let {
-            LogManager.i("PushNotifyReceiverActivity", "遍历extras:")
-            LogManager.i("PushNotifyReceiverActivity", "  extras: $it")
+            LogManager.i("PushNotifyReceiverActivity", "遍历extras: $it")
         }
     }
 
