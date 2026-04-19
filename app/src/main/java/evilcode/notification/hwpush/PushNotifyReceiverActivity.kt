@@ -38,6 +38,16 @@ class PushNotifyReceiverActivity : AppCompatActivity() {
         LogManager.i("PushNotifyReceiverActivity", "Type: ${intent.type}")
         LogManager.i("PushNotifyReceiverActivity", "Data URI: ${intent.data}")
         LogManager.i("PushNotifyReceiverActivity", "Scheme: ${intent.scheme}")
+        //遍历intent
+        intent.categories?.forEach { category ->
+            LogManager.i("PushNotifyReceiverActivity", "Category: $category")
+        }
+        intent.component?.let {
+            LogManager.i("PushNotifyReceiverActivity", "Component: ${it.className}")
+        }
+        intent.`package`?.let {
+            LogManager.i("PushNotifyReceiverActivity", "Package: $it")
+        }
 
         val extras = intent.extras
         if (extras != null) {

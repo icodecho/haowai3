@@ -30,7 +30,7 @@ class HwPushService : HmsMessageService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage?) {
-        LogManager.i("HwPushService", "onMessageReceived called")
+        LogManager.i("HwPushService", "onMessageReceived called") //只有透传消息会触发
         if (message == null) {
             LogManager.e("HwPushService", "Received message is null")
             return
@@ -68,6 +68,11 @@ class HwPushService : HmsMessageService() {
             LogManager.i("HwPushService", "  defaultVibrate: ${it.isDefaultVibrate}")
             LogManager.i("HwPushService", "  defaultLight: ${it.isDefaultLight}")
         }
+        //遍历data
+        data?.let {
+            LogManager.i("HwPushService", "遍历data:")
+            LogManager.i("HwPushService", "  data: $it")
+        }
         
         if (notification.title != null) {
             title = notification.title
@@ -75,10 +80,10 @@ class HwPushService : HmsMessageService() {
             dataStr = if (!data.isNullOrEmpty()) data else null
             if (!data.isNullOrEmpty()) {
                 messageType = "notification_with_data"
-                LogManager.i("HwPushService", "通知消息(含透传数据) - Title: $title, Body: $body, Data: $dataStr")
+                LogManager.i("HwPushService", "通知消息(含透传数据) - Title: $title, Body: $body, Data: $dataStr") //还是透传消息，如果自定义键值键名有title且data不为空时，则匹配
             } else {
                 messageType = "notification"
-                LogManager.i("HwPushService", "通知消息 - Title: $title, Body: $body")
+                LogManager.i("HwPushService", "通知消息 - Title: $title, Body: $body") //还是透传消息
             }
         } else if (!data.isNullOrEmpty()) {
             dataStr = data
