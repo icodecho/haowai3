@@ -39,14 +39,9 @@ class PushNotifyReceiverActivity : AppCompatActivity() {
         LogManager.i("PushNotifyReceiverActivity", "Data URI: ${intent.data}")
         LogManager.i("PushNotifyReceiverActivity", "Scheme: ${intent.scheme}")
         //遍历intent
-        intent.categories?.forEach { category ->
-            LogManager.i("PushNotifyReceiverActivity", "Category: $category")
-        }
-        intent.component?.let {
-            LogManager.i("PushNotifyReceiverActivity", "Component: ${it.className}")
-        }
-        intent.`package`?.let {
-            LogManager.i("PushNotifyReceiverActivity", "Package: $it")
+        intent?.let {
+            LogManager.i("PushNotifyReceiverActivity", "遍历intent:")
+            LogManager.i("PushNotifyReceiverActivity", "  intent: $it")
         }
 
         val extras = intent.extras
@@ -60,9 +55,14 @@ class PushNotifyReceiverActivity : AppCompatActivity() {
         } else {
             LogManager.w("PushNotifyReceiverActivity", "Extras bundle is null")
         }
+        //遍历extras
+        intent?.let {
+            LogManager.i("PushNotifyReceiverActivity", "遍历extras:")
+            LogManager.i("PushNotifyReceiverActivity", "  extras: $it")
+        }
     }
 
-    private fun handleNotificationIntent(intent: Intent?) {
+    private fun handleNotificationIntent(intent: Intent?) {//点击通知消息时触发
         if (intent == null) {
             LogManager.w("PushNotifyReceiverActivity", "Intent is null, abort")
             return
