@@ -34,6 +34,21 @@ class MessageListActivity : AppCompatActivity() {
         LogManager.i("MessageListActivity", "Activity created")
     }
 
+    override fun onResume() {
+        super.onResume()
+        LogManager.i("MessageListActivity", "Activity resumed")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        LogManager.i("MessageListActivity", "Activity paused")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        LogManager.i("MessageListActivity", "Activity destroyed")
+    }
+
     private fun setupToolbar() {
         binding.toolbar.setNavigationOnClickListener {
             LogManager.i("MessageListActivity", "Back button clicked, finishing activity")

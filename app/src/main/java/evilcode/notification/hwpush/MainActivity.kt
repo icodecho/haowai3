@@ -72,6 +72,21 @@ class MainActivity : AppCompatActivity() {
         LogManager.i("MainActivity", "Activity destroyed")
     }
 
+    override fun onResume() {
+        super.onResume()
+        LogManager.i("MainActivity", "Activity resumed")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        LogManager.i("MainActivity", "Activity paused")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        LogManager.i("MainActivity", "Activity stopped")
+    }
+
     private fun setupViews() {
         binding.btnGetToken.setOnClickListener {
             LogManager.i("MainActivity", "User clicked get token button")

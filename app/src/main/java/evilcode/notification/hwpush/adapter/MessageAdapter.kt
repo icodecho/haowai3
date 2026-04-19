@@ -13,6 +13,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import evilcode.notification.hwpush.R
 import evilcode.notification.hwpush.databinding.ItemMessageBinding
 import evilcode.notification.hwpush.model.PushMessage
+import evilcode.notification.hwpush.util.LogManager
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -183,16 +184,17 @@ class MessageAdapter(
             if (copyId) {
                 sb.append("消息ID: ${msg.messageId ?: "无"}\n")
             }
-            //sb.append("------------------------\n")
         }
 
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("推送消息", sb.toString())
         clipboard.setPrimaryClip(clip)
         Toast.makeText(context, R.string.copy_success, Toast.LENGTH_SHORT).show()
+        LogManager.i("MessageAdapter", "Copied ${selectedList.size} messages to clipboard (title=$copyTitle, body=$copyBody, data=$copyData, time=$copyTime, id=$copyId)")
     }
 
     fun showDeleteDialog(onDelete: () -> Unit) {
+        LogManager.i("MessageAdapter", "Delete confirmation dialog shown")
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.delete_confirm)
             .setPositiveButton(R.string.btn_confirm) { _, _ ->
@@ -203,6 +205,7 @@ class MessageAdapter(
     }
 
     fun showClearAllDialog(onClear: () -> Unit) {
+        LogManager.i("MessageAdapter", "Clear all messages confirmation dialog shown")
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.clear_confirm)
             .setPositiveButton(R.string.btn_confirm) { _, _ ->

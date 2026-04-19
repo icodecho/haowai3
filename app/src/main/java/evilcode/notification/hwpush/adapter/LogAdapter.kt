@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import evilcode.notification.hwpush.R
 import evilcode.notification.hwpush.databinding.ItemLogBinding
 import evilcode.notification.hwpush.model.AppLog
+import evilcode.notification.hwpush.util.LogManager
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -115,5 +116,6 @@ class LogAdapter(
         val clip = ClipData.newPlainText("运行日志", sb.toString())
         clipboard.setPrimaryClip(clip)
         Toast.makeText(context, R.string.copy_success, Toast.LENGTH_SHORT).show()
+        LogManager.i("LogAdapter", "Copied ${selectedList.size} logs to clipboard")
     }
 }

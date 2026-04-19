@@ -39,6 +39,17 @@ class LogListActivity : AppCompatActivity() {
         LogManager.i("LogListActivity", "Activity destroyed")
     }
 
+    override fun onResume() {
+        super.onResume()
+        LogManager.i("LogListActivity", "Activity resumed, reloading logs")
+        loadLogs()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        LogManager.i("LogListActivity", "Activity paused")
+    }
+
     private fun setupToolbar() {
         binding.toolbar.setNavigationOnClickListener {
             LogManager.i("LogListActivity", "Back button clicked, finishing activity")
@@ -63,6 +74,17 @@ class LogListActivity : AppCompatActivity() {
     }
 
     private fun setupActions() {
+        binding.swipeRefresh.setOnRefreshListener {
+            LogManager.i("LogListActivity", "Swipe refresh triggered, reloading logs")
+            loadLogs()
+        }
+
+        binding.swipeRefresh.setColorSchemeResources(
+            R.color.accent,
+            R.color.success,
+            R.color.error
+        )
+
         binding.btnCopy.setOnClickListener {
             LogManager.i("LogListActivity", "Copy selected logs to clipboard")
             adapter.copySelectedToClipboard()
@@ -104,6 +126,7 @@ class LogListActivity : AppCompatActivity() {
             }
             adapter.refreshData(logs)
             binding.tvEmpty.visibility = if (logs.isEmpty()) View.VISIBLE else View.GONE
+            binding.swipeRefresh.isRefreshing = false
             LogManager.i("LogListActivity", "Loaded ${logs.size} logs")
         }
     }

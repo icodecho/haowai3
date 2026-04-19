@@ -11,6 +11,26 @@ import kotlinx.coroutines.launch
 
 class HaoWaiNotificationListener : NotificationListenerService() {
 
+    override fun onCreate() {
+        super.onCreate()
+        LogManager.i("HaoWaiNotificationListener", "Service created")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        LogManager.i("HaoWaiNotificationListener", "Service destroyed")
+    }
+
+    override fun onListenerConnected() {
+        super.onListenerConnected()
+        LogManager.i("HaoWaiNotificationListener", "Listener connected")
+    }
+
+    override fun onListenerDisconnected() {
+        super.onListenerDisconnected()
+        LogManager.w("HaoWaiNotificationListener", "Listener disconnected")
+    }
+
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         super.onNotificationPosted(sbn)
         if (sbn == null) return
@@ -45,5 +65,7 @@ class HaoWaiNotificationListener : NotificationListenerService() {
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?) {
         super.onNotificationRemoved(sbn)
+        if (sbn == null) return
+        LogManager.i("HaoWaiNotificationListener", "Notification removed - Package: ${sbn.packageName}")
     }
 }
