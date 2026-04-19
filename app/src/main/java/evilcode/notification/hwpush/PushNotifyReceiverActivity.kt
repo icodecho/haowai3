@@ -43,6 +43,11 @@ class PushNotifyReceiverActivity : AppCompatActivity() {
         extras?.let {
             LogManager.i("PushNotifyReceiverActivity", "遍历extras: $it")
         }
+        //遍历extras
+        extras?.keySet()?.forEach { key ->
+            val value = extras.get(key)
+            LogManager.i("PushNotifyReceiverActivity", "遍历extrass: Key: $key, Value: $value")
+        }
     }
 
     private fun handleNotificationIntent(intent: Intent?) {//点击通知消息时触发
